@@ -5,6 +5,7 @@ from model import BattleModel
 from mesa.visualization.modules import ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
 
+
 def agent_portrayal(agent):
     portrayal = {"Shape": "circle",
                  "Filled": "true",
@@ -17,7 +18,8 @@ def agent_portrayal(agent):
         portrayal["Color"] = "blue"
         portrayal["Layer"] = 0
     return portrayal
-		
+
+
 grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
 
 server = ModularServer(BattleModel,
