@@ -1,14 +1,13 @@
 # server.py
+from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.ModularVisualization import ModularServer
 from battle_model import BattleModel
-from ContinuousWorld import ContinuousWorld
 
 
 def agent_portrayal(agent):
-    portrayal = {"Shape": "rect",
+    portrayal = {"Shape": "circle",
                  "Filled": "true",
-                 "w": 1,
-                 "h": 1}
+                 "r": 0.5}
 
     if agent.type == 'red':
         portrayal["Color"] = "red"
@@ -19,9 +18,9 @@ def agent_portrayal(agent):
     return portrayal
 
 
-canvas = ContinuousWorld(agent_portrayal, 10, 10, 500, 500)
+grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
 
 server = ModularServer(BattleModel,
-                       [canvas],
+                       [grid],
                        "Warrior Model",
                        {"width": 10, "height": 10})
