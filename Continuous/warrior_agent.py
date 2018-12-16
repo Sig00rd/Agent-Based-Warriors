@@ -25,20 +25,21 @@ class WarriorAgent(mesa.Agent):
             self.move()
 
     def move(self):
-        visible_enemies = self.scan_for_enemies()
-        visible_allies = self.scan_for_allies()
-
-        velocity_vector = self.calculate_move_vector()
+        velocity_vector = self.calculate_velocity_vector()
         normalised_velocity_vector = velocity_vector / np.linalg.norm(velocity_vector)
         end_point = self.pos + normalised_velocity_vector * self.movement_speed
         self.model.space.move_agent(self, end_point)
 
-        move_vector = (self.coherence_vector(visible_allies) * self.COHERENCE_FACTOR +
-                       self.match_vector(visible_allies) * self.MATCH_FACTOR +
-                       self.separate_vector(visible_allies) * self.SEPARATION_FACTOR +
-                       self.enemy_position_vector(visible_enemies) * self.ENEMY_POSITION_FACTOR)
+    def calculate_velocity_vector(self):
+        visible_enemies = self.scan_for_enemies()
+        visible_allies = self.scan_for_allies()
 
-        return move_vector
+        velocity_vector = (self.coherence_vector(visible_allies) * self.COHERENCE_FACTOR +
+                           self.match_vector(visible_allies) * self.MATCH_FACTOR +
+                           self.separate_vector(visible_allies) * self.SEPARATION_FACTOR +
+                           self.enemy_position_vector(visible_enemies) * self.ENEMY_POSITION_FACTOR)
+
+        return velocity_vector
 
     def coherence_vector(self, visible_allies):
         return np.array([1.0, 1.0])
