@@ -18,8 +18,8 @@
       <file leaf-file-name="warrior_agent.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Continuous/warrior_agent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="41" column="30" lean-forward="false" selection-start-line="41" selection-start-column="30" selection-end-line="41" selection-end-column="30" />
+            <state relative-caret-position="510">
+              <caret line="57" column="31" lean-forward="false" selection-start-line="57" selection-start-column="31" selection-end-line="57" selection-end-column="31" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
@@ -269,7 +269,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#11#33#0" expanded="true" />
+            <element signature="e#11#33#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -312,7 +312,7 @@
         <state relative-caret-position="510">
           <caret line="30" column="25" lean-forward="true" selection-start-line="30" selection-start-column="25" selection-end-line="30" selection-end-column="25" />
           <folding>
-            <element signature="e#0#72#0" expanded="true" />
+            <element signature="e#0#72#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -341,20 +341,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/mesa/space.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1226">
-          <caret line="617" column="8" lean-forward="false" selection-start-line="617" selection-start-column="8" selection-end-line="617" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Continuous/battle_model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
           <caret line="15" column="23" lean-forward="true" selection-start-line="15" selection-start-column="23" selection-end-line="15" selection-end-column="23" />
           <folding>
-            <element signature="e#11#33#0" expanded="true" />
+            <element signature="e#11#33#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -375,10 +367,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/site-packages/mesa/space.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="694" column="8" lean-forward="false" selection-start-line="694" selection-start-column="8" selection-end-line="694" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Continuous/warrior_agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="41" column="30" lean-forward="false" selection-start-line="41" selection-start-column="30" selection-end-line="41" selection-end-column="30" />
+        <state relative-caret-position="510">
+          <caret line="57" column="31" lean-forward="false" selection-start-line="57" selection-start-column="31" selection-end-line="57" selection-end-column="31" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
           </folding>

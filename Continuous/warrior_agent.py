@@ -41,6 +41,22 @@ class WarriorAgent(mesa.Agent):
 
         return velocity_vector
 
+    def scan_for_allies(self):
+        warriors_in_flocking_radius = self.model.space.get_neighbors(self.pos, self.FLOCKING_RADIUS, False)
+        allies_in_range = []
+        for warrior in warriors_in_flocking_radius:
+            if warrior.type == self.type:
+                allies_in_range.append(warrior)
+        return allies_in_range
+
+    def scan_for_enemies(self):
+        warriors_in_enemy_scanning_radius = self.model.space.get_neighbors(self.pos, self.FLOCKING_RADIUS, False)
+        enemies_in_range = []
+        for warrior in warriors_in_enemy_scanning_radius:
+            if warrior.type != self.type:
+                enemies_in_range.append(warrior)
+        return enemies_in_range
+
     def coherence_vector(self, visible_allies):
         return np.array([1.0, 1.0])
 
@@ -53,11 +69,7 @@ class WarriorAgent(mesa.Agent):
     def enemy_position_vector(self, visible_enemies):
         return np.array([1.0, 1.0])
 
-    def scan_for_allies(self):
-        pass
 
-    def scan_for_enemies(self):
-        pass
 
     # def move(self):
     #     if self.type == 'blue':
