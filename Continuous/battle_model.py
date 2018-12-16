@@ -21,9 +21,20 @@ class BattleModel(Model):
         pos = np.array((1.0,5.0))
         self.schedule.add(a)
         self.space.place_agent(a, pos)
-        
+
+        a = warrior_agent.RedWarrior(3, self)
+        pos = np.array((4.0,2.0))
+        self.schedule.add(a)
+        self.space.place_agent(a, pos)
+
         a = warrior_agent.BlueWarrior(2, self)
         pos = np.array((9.0,5.0))
+        self.schedule.add(a)
+        self.space.place_agent(a, pos)
+        self.a = a
+
+        a = warrior_agent.BlueWarrior(4, self)
+        pos = np.array((6.0,1.0))
         self.schedule.add(a)
         self.space.place_agent(a, pos)
         self.a = a

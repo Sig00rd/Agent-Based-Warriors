@@ -11,7 +11,7 @@ class WarriorAgent(mesa.Agent):
         self.hp = 10
         self.ENEMY_SCANNING_RADIUS = simulation_parameters.VISION_RANGE # promień widzenia przeciwników
         self.FLOCKING_RADIUS = simulation_parameters.FLOCKING_RADIUS # promień widzenia swoich
-        self.SEPARATION_DISTANCE = simulation_parameters.SEPARATION_DISTANCE # promień w którym żołnierz chce być sam
+        self.SEPARATION_DISTANCE = simulation_parameters.SEPARATION_DISTANCE # jaki dystans chce zachować od innych w oddziale
         self.COHERENCE_FACTOR = simulation_parameters.COHERENCE_FACTOR
         self.MATCH_FACTOR = simulation_parameters.MATCH_FACTOR
         self.SEPARATION_FACTOR = simulation_parameters.SEPARATION_FACTOR
@@ -24,6 +24,8 @@ class WarriorAgent(mesa.Agent):
         else:
             self.move()
 
+    # ostateczny wektor prędkości otrzymujemy normalizując wektor prędkości z funkcji niżej i mnożąc go przez szybkość
+    # danego typu agenta (skalarną) parametryzowaną w pliku konfiguracyjnym
     def move(self):
         velocity_vector = self.calculate_velocity_vector()
         normalised_velocity_vector = velocity_vector / np.linalg.norm(velocity_vector)
@@ -34,6 +36,8 @@ class WarriorAgent(mesa.Agent):
         visible_enemies = self.scan_for_enemies()
         visible_allies = self.scan_for_allies()
 
+        # wektor prędkości przed normalizacją - kombinacja liniowa wektorów z poszczególnych reguł o współczynnikach
+        # równych ich wagom (parametryzowanych w pliku konfiguracyjnym)
         velocity_vector = (self.coherence_vector(visible_allies) * self.COHERENCE_FACTOR +
                            self.match_vector(visible_allies) * self.MATCH_FACTOR +
                            self.separate_vector(visible_allies) * self.SEPARATION_FACTOR +
@@ -50,24 +54,31 @@ class WarriorAgent(mesa.Agent):
         return allies_in_range
 
     def scan_for_enemies(self):
-        warriors_in_enemy_scanning_radius = self.model.space.get_neighbors(self.pos, self.FLOCKING_RADIUS, False)
+        warriors_in_range = self.model.space.get_neighbors(self.pos, self.ENEMY_SCANNING_RADIUS, False)
         enemies_in_range = []
-        for warrior in warriors_in_enemy_scanning_radius:
+        for warrior in warriors_in_range:
             if warrior.type != self.type:
                 enemies_in_range.append(warrior)
         return enemies_in_range
 
     def coherence_vector(self, visible_allies):
-        return np.array([1.0, 1.0])
+        vector = np.zeros(2)
+        for ally in visible_allies:
+            vector += self.model.space.get_heading(self.pos, ally.pos)
+        vector /= len(visible_allies)
+        return vector
 
     def match_vector(self, visible_allies):
-        return np.array([1.0, 1.0])
+        vector = np.zeros(2)
+        return vector
 
     def separate_vector(self, visible_allies):
-        return np.array([1.0, 1.0])
+        vector = np.zeros(2)
+        return vector
 
     def enemy_position_vector(self, visible_enemies):
-        return np.array([1.0, 1.0])
+        vector = np.zeros(2)
+        return vector
 
 
 
