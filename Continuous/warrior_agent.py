@@ -80,8 +80,12 @@ class WarriorAgent(mesa.Agent):
             vector /= len(visible_allies)
         return vector
 
+    # wektor przeciwny do położeń agentów w przestrzeni "osobistej" tego agenta
     def separate_vector(self, visible_allies):
         vector = np.zeros(2)
+        for ally in visible_allies:
+            if self.model.space.get_distance(self.pos, ally.pos) < self.SEPARATION_DISTANCE:
+                vector -= self.model.space.get_heading(self.pos, ally.pos)
         return vector
 
     # def attack(self):
