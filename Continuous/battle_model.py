@@ -41,3 +41,4 @@ class BattleModel(Model):
 
     def step(self):
         self.schedule.step()
+        print("Żywych agentów: "+str(len(self.schedule.agents)))

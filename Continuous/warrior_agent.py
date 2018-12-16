@@ -20,12 +20,26 @@ class WarriorAgent(mesa.Agent):
 
     def step(self):
         if self.hp <= 0:
-            self.model.space.remove_agent(self)
-            self.model.schedule.remove(self)
+            self.die()
         else:
-            self.move()
+            enemies_in_attack_range = self.scan_for_enemies(self.attack_range)
+            if enemies_in_attack_range:
+                enemy = random.choice(enemies_in_attack_range)
+                self.attack(enemy)
+            else:
+                self.move()
 
-    # ostateczny wektor prędkości otrzymujemy normalizując wektor prędkości z funkcji niżej i mnożąc go przez szybkość
+    def die(self):
+        print("Argh! Ginę!")
+        self.type = 'dead'
+        self.model.schedule.remove(self)
+
+    def attack(self, enemy):
+        print("Jestem: "+self.type+" i biję! Mam teraz PŻ: "+str(self.hp))
+        enemy.hp -= self.attack_damage
+
+    # ostateczny wektor prędkości otrzymujemy normalizując wektor prędkości z metody calculate_velocity_vector()
+    # i mnożąc go przez szybkość
     # danego typu agenta (skalarną) parametryzowaną w pliku konfiguracyjnym
     def move(self):
         velocity_vector = self.calculate_velocity_vector()
@@ -35,7 +49,7 @@ class WarriorAgent(mesa.Agent):
         self.model.space.move_agent(self, end_point)
 
     def calculate_velocity_vector(self):
-        visible_enemies = self.scan_for_enemies()
+        visible_enemies = self.scan_for_enemies(self.ENEMY_SCANNING_RADIUS)
         visible_allies = self.scan_for_allies()
 
         # wektor prędkości przed normalizacją - kombinacja liniowa wektorów z poszczególnych reguł o współczynnikach
@@ -55,11 +69,11 @@ class WarriorAgent(mesa.Agent):
                 allies_in_range.append(warrior)
         return allies_in_range
 
-    def scan_for_enemies(self):
-        warriors_in_range = self.model.space.get_neighbors(self.pos, self.ENEMY_SCANNING_RADIUS, False)
+    def scan_for_enemies(self, given_range):
+        warriors_in_range = self.model.space.get_neighbors(self.pos, given_range, False)
         enemies_in_range = []
         for warrior in warriors_in_range:
-            if warrior.type != self.type:
+            if warrior.type != self.type and warrior.type != 'dead':
                 enemies_in_range.append(warrior)
         return enemies_in_range
 
@@ -88,25 +102,18 @@ class WarriorAgent(mesa.Agent):
                 vector -= self.model.space.get_heading(self.pos, ally.pos)
         return vector
 
-    # def attack(self):
-    #     if self.type == 'blue':
-    #         position = np.array([-1, 0.0])
-    #     elif self.type == 'red':
-    #         position = np.array([1, 0.0])
-    #     new_pos = self.pos + position
-    #     cellmates = self.model.space.get_neighbors(new_pos, 2.0)
-    #     enemy = random.choice(cellmates)
-    #     enemy.hp -= 1
-
-
 class RedWarrior(WarriorAgent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.type = 'red'
+        self.attack_damage = 2
+        self.attack_range = 2
         self.movement_speed = simulation_parameters.RED_MOVEMENT_SPEED
 
 class BlueWarrior(WarriorAgent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.type = 'blue'
+        self.attack_damage = 2
+        self.attack_range = 2
         self.movement_speed = simulation_parameters.BLUE_MOVEMENT_SPEED
