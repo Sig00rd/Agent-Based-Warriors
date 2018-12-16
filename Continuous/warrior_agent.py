@@ -9,6 +9,7 @@ class WarriorAgent(mesa.Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.hp = 10
+        self.velocity = np.zeros(2)
         self.ENEMY_SCANNING_RADIUS = simulation_parameters.VISION_RANGE # promień widzenia przeciwników
         self.FLOCKING_RADIUS = simulation_parameters.FLOCKING_RADIUS # promień widzenia swoich
         self.SEPARATION_DISTANCE = simulation_parameters.SEPARATION_DISTANCE # jaki dystans chce zachować od innych w oddziale
@@ -29,7 +30,8 @@ class WarriorAgent(mesa.Agent):
     def move(self):
         velocity_vector = self.calculate_velocity_vector()
         normalised_velocity_vector = velocity_vector / np.linalg.norm(velocity_vector)
-        end_point = self.pos + normalised_velocity_vector * self.movement_speed
+        self.velocity = normalised_velocity_vector * self.movement_speed
+        end_point = self.pos + self.velocity
         self.model.space.move_agent(self, end_point)
 
     def calculate_velocity_vector(self):
@@ -41,7 +43,7 @@ class WarriorAgent(mesa.Agent):
         velocity_vector = (self.coherence_vector(visible_allies) * self.COHERENCE_FACTOR +
                            self.match_vector(visible_allies) * self.MATCH_FACTOR +
                            self.separate_vector(visible_allies) * self.SEPARATION_FACTOR +
-                           self.enemy_position_vector(visible_enemies) * self.ENEMY_POSITION_FACTOR)
+                           self.coherence_vector(visible_enemies) * self.ENEMY_POSITION_FACTOR)
 
         return velocity_vector
 
@@ -61,40 +63,26 @@ class WarriorAgent(mesa.Agent):
                 enemies_in_range.append(warrior)
         return enemies_in_range
 
-    def coherence_vector(self, visible_allies):
+    # zwraca wektor od agenta do środka danej grupy agentów
+    def coherence_vector(self, group_in_radius):
         vector = np.zeros(2)
-        for ally in visible_allies:
-            vector += self.model.space.get_heading(self.pos, ally.pos)
-        vector /= len(visible_allies)
+        if group_in_radius:
+            for warrior in group_in_radius:
+                vector += self.model.space.get_heading(self.pos, warrior.pos)
+            vector /= len(group_in_radius)
         return vector
 
     def match_vector(self, visible_allies):
         vector = np.zeros(2)
+        if visible_allies:
+            for ally in visible_allies:
+                vector += ally.velocity
+            vector /= len(visible_allies)
         return vector
 
     def separate_vector(self, visible_allies):
         vector = np.zeros(2)
         return vector
-
-    def enemy_position_vector(self, visible_enemies):
-        vector = np.zeros(2)
-        return vector
-
-
-
-    # def move(self):
-    #     if self.type == 'blue':
-    #         position = np.array([-1, 0.0])
-    #     elif self.type == 'red':
-    #         position = np.array([1, 0.0])
-    #     new_pos = self.pos + position
-    #     new_cell_agents = self.model.space.get_neighbors(new_pos, 0)
-    #
-    #     if not self.model.space.out_of_bounds(new_pos):
-    #         if len(new_cell_agents) == 0:
-    #             self.model.space.move_agent(self, new_pos)
-    #         else:
-    #             self.attack()
 
     # def attack(self):
     #     if self.type == 'blue':
