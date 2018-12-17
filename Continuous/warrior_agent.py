@@ -19,24 +19,21 @@ class WarriorAgent(mesa.Agent):
         self.ENEMY_POSITION_FACTOR = simulation_parameters.ENEMY_POSITION_FACTOR
 
     def step(self):
-        if self.hp <= 0:
-            self.die()
+        enemies_in_attack_range = self.scan_for_enemies(self.attack_range)
+        if enemies_in_attack_range:
+            enemy = random.choice(enemies_in_attack_range)
+            self.attack(enemy)
         else:
-            enemies_in_attack_range = self.scan_for_enemies(self.attack_range)
-            if enemies_in_attack_range:
-                enemy = random.choice(enemies_in_attack_range)
-                self.attack(enemy)
-            else:
-                self.move()
+            self.move()
 
     def die(self):
-        print("Argh! Ginę!")
         self.type = 'dead'
         self.model.schedule.remove(self)
 
     def attack(self, enemy):
-        print("Jestem: "+self.type+" i biję! Mam teraz PŻ: "+str(self.hp))
         enemy.hp -= self.attack_damage
+        if enemy.hp <= 0:
+            enemy.die()
 
     # ostateczny wektor prędkości otrzymujemy normalizując wektor prędkości z metody calculate_velocity_vector()
     # i mnożąc go przez szybkość
