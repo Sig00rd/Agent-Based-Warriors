@@ -10,35 +10,36 @@ import numpy as np
 import warrior_agent
 
 class BattleModel(Model):
-    """A model with some number of agents."""
-    def __init__(self, width, height):
-        self.running = True
-        self.space = ContinuousSpace(width, height, False)
-        self.schedule = RandomActivation(self)
+	"""A model with some number of agents."""
+	def __init__(self, width, height):
+		self.running = True
+		self.space = ContinuousSpace(width, height, False)
+		self.schedule = RandomActivation(self)
+		self.next_agent_id = 1
 
-        # Create agents
-        a = warrior_agent.RedWarrior(1, self)
-        pos = np.array((1.0,5.0))
-        self.schedule.add(a)
-        self.space.place_agent(a, pos)
+		# Create agents
+		self.spawner(1.0,1.0, 1.2,1.2, 5,15, 'red')
+		self.spawner(width - 1.0,1.0, -1.2,1.2, 5,15, 'blue')
+			
+	def spawner(self, first_x, first_y, separation_x, separation_y, cols, rows, type):
+		for i in range(cols):
+			for j in range(rows):
+				x = first_x + (separation_x * i)
+				y = first_y + (separation_y * j)
+				self.spawn(x,y,type)
+		
+		
+	def spawn(self,x,y,type):
+		if(type == 'red'):
+			a = warrior_agent.RedWarrior(self.next_agent_id, self)
+		else:
+			a = warrior_agent.BlueWarrior(self.next_agent_id, self)
+		pos = np.array((x,y))
+		self.schedule.add(a)
+		self.space.place_agent(a, pos)
 
-        a = warrior_agent.RedWarrior(3, self)
-        pos = np.array((4.0,2.0))
-        self.schedule.add(a)
-        self.space.place_agent(a, pos)
+		self.next_agent_id += 1
 
-        a = warrior_agent.BlueWarrior(2, self)
-        pos = np.array((9.0,5.0))
-        self.schedule.add(a)
-        self.space.place_agent(a, pos)
-        self.a = a
-
-        a = warrior_agent.BlueWarrior(4, self)
-        pos = np.array((6.0,1.0))
-        self.schedule.add(a)
-        self.space.place_agent(a, pos)
-        self.a = a
-
-    def step(self):
-        self.schedule.step()
-        print("Żywych agentów: "+str(len(self.schedule.agents)))
+	def step(self):
+		self.schedule.step()
+		print("Żywych agentów: "+str(len(self.schedule.agents)))

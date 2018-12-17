@@ -19,9 +19,9 @@ def agent_portrayal(agent):
     return portrayal
 
 
-canvas = ContinuousWorld(agent_portrayal, 10, 10, 500, 500)
+canvas = ContinuousWorld(agent_portrayal, 30, 30, 750, 750)
 
 server = ModularServer(BattleModel,
                        [canvas],
                        "Warrior Model",
-                       {"width": 10, "height": 10})
+                       {"width": 30.0, "height": 30.0})
