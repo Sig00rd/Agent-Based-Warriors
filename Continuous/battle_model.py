@@ -11,15 +11,27 @@ import warrior_agent
 
 class BattleModel(Model):
 	"""A model with some number of agents."""
-	def __init__(self, width, height):
+	def __init__(self, red_col,red_row, blue_col,blue_row, red_movement, blue_movement, 
+				coherence_factor, separation_factor, match_factor, enemy_position_factor, 
+				vision_range, flocking_radius, separation_distance, width, height):
 		self.running = True
 		self.space = ContinuousSpace(width, height, False)
 		self.schedule = RandomActivation(self)
 		self.next_agent_id = 1
+		
+		self.RED_MOVEMENT_SPEED = red_movement
+		self.BLUE_MOVEMENT_SPEED = blue_movement
+		self.COHERENCE_FACTOR = coherence_factor
+		self.SEPARATION_FACTOR = separation_factor
+		self.MATCH_FACTOR = match_factor
+		self.ENEMY_POSITION_FACTOR = enemy_position_factor
+		self.VISION_RANGE = vision_range
+		self.FLOCKING_RADIUS = flocking_radius
+		self.SEPARATION_DISTANCE = separation_distance
 
 		# Create agents
-		self.spawner(1.0,1.0, 1.2,1.2, 5,15, 'red')
-		self.spawner(width - 1.0,1.0, -1.2,1.2, 5,15, 'blue')
+		self.spawner(1.0,1.0, 1.2,1.2, red_col,red_row, 'red')
+		self.spawner(width - 1.0,1.0, -1.2,1.2, blue_col,blue_row, 'blue')
 			
 	def spawner(self, first_x, first_y, separation_x, separation_y, cols, rows, type):
 		for i in range(cols):
