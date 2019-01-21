@@ -24,3 +24,4 @@ def damage_inflicted_morale_modifier(damage_inflicted: float) -> float:
 def damage_received_morale_modifier(damage_received_recently: float, initial_hp: float) -> float:
     return damage_received_recently.__pow__(2) / initial_hp
 
+SEPARATION_DISTANCE = 1.5

@@ -3,48 +3,70 @@ from mesa import Model
 from mesa.time import RandomActivation
 from mesa.space import ContinuousSpace
 from mesa.datacollection import DataCollector
+from math import floor
 import random
 import copy
 import numpy as np
 
 import warrior_agent
 
-
 class BattleModel(Model):
     """A model with some number of agents."""
-
-    def __init__(self, red_col, red_row, blue_col, blue_row, red_movement, blue_movement,
-                 coherence_factor, separation_factor, match_factor, enemy_position_factor,
-                 vision_range, flocking_radius, separation_distance, width, height):
+    def __init__(self, red_col,red_row,red_squad, blue_col,blue_row,blue_squad,blue_agents_elite_squad, red_movement, blue_movement, width, height):
         self.running = True
         self.space = ContinuousSpace(width, height, False)
         self.schedule = RandomActivation(self)
         self.next_agent_id = 1
-
+        
         self.RED_MOVEMENT_SPEED = red_movement
         self.BLUE_MOVEMENT_SPEED = blue_movement
-        self.COHERENCE_FACTOR = coherence_factor
-        self.SEPARATION_FACTOR = separation_factor
-        self.MATCH_FACTOR = match_factor
-        self.ENEMY_POSITION_FACTOR = enemy_position_factor
-        self.VISION_RANGE = vision_range
-        self.FLOCKING_RADIUS = flocking_radius
-        self.SEPARATION_DISTANCE = separation_distance
 
+        separation_y = 1.5
+        # Find center
+        red_first_y = ((height/2 - (red_squad * red_row/2 * separation_y)) + separation_y/2) - ((red_squad-1) * separation_y*2)
+        blue_first_y = ((height/2 - (blue_squad * blue_row/2 * separation_y)) + separation_y/2) - ((blue_squad-1) * separation_y*2)
+        
         # Create agents
-        self.spawner(1.0, 1.0, 1.2, 1.2, red_col, red_row, 'red')
-        self.spawner(width - 1.0, 1.0, -1.2, 1.2, blue_col, blue_row, 'blue')
-
-    def spawner(self, first_x, first_y, separation_x, separation_y, cols, rows, type):
+        self.spawner(15.0,red_first_y, 1.5,separation_y, red_col,red_row,red_squad,0, 'red')
+        self.spawner(width - 15.0,blue_first_y, -1.5,separation_y, blue_col,blue_row,blue_squad,blue_agents_elite_squad, 'blue')
+            
+    def spawner(self, first_x, first_y, separation_x, separation_y, cols, rows, squad, elite_squad, type):
         for i in range(cols):
-            for j in range(rows):
+            for j in range(rows * squad):
                 x = first_x + (separation_x * i)
                 y = first_y + (separation_y * j)
-                self.spawn(x, y, type)
+                
+                # Squad separator
+                y = y + (4*separation_y) * (floor(j / rows))
 
-    def spawn(self, x, y, type):
-        if type == 'red':
+                casual = squad - elite_squad
+                if casual < 0:
+                    casual = 0
+                
+                elite = True
+                if casual > 0:
+                    if squad-1 == floor(j / rows):
+                        elite = False
+                if casual > 1:
+                    if floor(j / rows) == 0:
+                        elite = False
+                if casual > 2:
+                    if squad-2 == floor(j / rows):
+                        elite = False
+                if casual > 3:
+                    if floor(j / rows) == 1:
+                        elite = False
+                if casual == 5:
+                    elite = False                
+                
+                self.spawn(x,y,type,elite)
+        
+        
+    def spawn(self,x,y,type,elite):
+        if(type == 'red'):
             a = warrior_agent.RedWarrior(self.next_agent_id, self)
+        elif(elite == True):
+            a = warrior_agent.BlueEliteWarrior(self.next_agent_id, self)
         else:
             a = warrior_agent.BlueCommonWarrior(self.next_agent_id, self)
         pos = np.array((x, y))
@@ -55,7 +77,7 @@ class BattleModel(Model):
 
     def step(self):
         self.schedule.step()
-
+        
         agents_and_allies_morale = []
         for agent in self.schedule.agent_buffer(False): #type: warrior_agent.WarriorAgent
             agents_and_allies_morale.append((agent, agent.get_average_morale_of_allies_in_flocking_radius()))
@@ -64,4 +86,4 @@ class BattleModel(Model):
             agent.update_morale(agent.calculate_new_morale(allies_morale))
 
         print("Żywych agentów: " + str(len(self.schedule.agents)))
-
+        
