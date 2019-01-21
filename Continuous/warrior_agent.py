@@ -9,6 +9,8 @@ class WarriorAgent(mesa.Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.morale = 100
+        self.has_killed_recently = False
+        self.damage_inflicted_recently = 0.0
         self.velocity = np.zeros(2)
         # recently = in the last turn
         self.damage_received_recently = 0.0
@@ -33,14 +35,19 @@ class WarriorAgent(mesa.Agent):
         self.model.schedule.remove(self)
 
     def attack(self, enemy):
-        enemy.receive_damage(self.attack_damage)
+        if enemy.receive_damage(self.attack_damage):
+            self.has_killed_recently = True
+        self.has_inflicted_damage = True
 
+    # returns if the damage inflicted was a killing blow
     def receive_damage(self, damage):
         self.hp -= damage
         self.damage_received_recently += damage
 
         if self.hp <= 0:
             self.die()
+            return True
+        return False
 
     # ostateczny wektor prędkości otrzymujemy normalizując wektor prędkości z metody calculate_velocity_vector()
     # i mnożąc go przez szybkość
@@ -106,6 +113,25 @@ class WarriorAgent(mesa.Agent):
                 vector -= self.model.space.get_heading(self.pos, ally.pos)
         return vector
 
+    def calculate_own_morale_modifier(self):
+        morale_modifier = self.damage_received_morale_modifier() + self.kill_morale_modifier() + self.damage_inflicted_morale_modifier()
+        return morale_modifier
+
+    def kill_morale_modifier(self):
+        return simulation_parameters.kill_morale_modifier(self.has_killed_recently)
+
+    def damage_received_morale_modifier(self):
+        return simulation_parameters.damage_received_morale_modifier(self.damage_received_recently, self.initial_hp)
+
+    def damage_inflicted_morale_modifier(self):
+        return simulation_parameters.damage_inflicted_morale_modifier(self.damage_inflicted_recently)
+
+    def update_morale(self, morale_modifier):
+        self.morale += morale_modifier
+        self.damage_inflicted_recently = 0.0
+        self.damage_received_recently = 0.0
+        self.has_killed_recently = False
+
     def get_morale_of_allies_in_flocking_radius(self):
         return [ally.get_morale() for ally in self.scan_for_allies()]
 
@@ -116,8 +142,10 @@ class RedWarrior(WarriorAgent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.type = 'red'
+        self.initial_hp = 10.0
         self.hp = 10.0
         self.attack_damage = 2.0
+        self.initial_attack_damage = 2.0
         self.attack_range = 2.0
         self.movement_speed = model.RED_MOVEMENT_SPEED
 
@@ -132,11 +160,15 @@ class BlueCommonWarrior(BlueWarrior):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.hp = 10.0
+        self.initial_hp = 10.0
         self.attack_damage = 2.0
+        self.initial_attack_damage = 2.0
 
 class BlueEliteWarrior(BlueWarrior):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.morale = 140
         self.hp = 15.0
+        self.initial_hp = 15.0
         self.attack_damage = 2.5
+        self.initial_attack_damage = 2.5
