@@ -8,7 +8,6 @@ class WarriorAgent(mesa.Agent):
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-        self.hp = 10
         self.velocity = np.zeros(2)
         self.ENEMY_SCANNING_RADIUS = model.VISION_RANGE # promień widzenia przeciwników
         self.FLOCKING_RADIUS = model.FLOCKING_RADIUS # promień widzenia swoich
@@ -103,14 +102,26 @@ class RedWarrior(WarriorAgent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.type = 'red'
-        self.attack_damage = 2
-        self.attack_range = 2
+        self.hp = 10.0
+        self.attack_damage = 2.0
+        self.attack_range = 2.0
         self.movement_speed = model.RED_MOVEMENT_SPEED
 
 class BlueWarrior(WarriorAgent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.type = 'blue'
-        self.attack_damage = 2
-        self.attack_range = 2
+        self.attack_range = 2.0
         self.movement_speed = model.BLUE_MOVEMENT_SPEED
+
+class BlueCommonWarrior(BlueWarrior):
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        self.hp = 10.0
+        self.attack_damage = 2.0
+
+class BlueEliteWarrior(BlueWarrior):
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        self.hp = 15.0
+        self.attack_damage = 2.5

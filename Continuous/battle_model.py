@@ -45,7 +45,7 @@ class BattleModel(Model):
 		if(type == 'red'):
 			a = warrior_agent.RedWarrior(self.next_agent_id, self)
 		else:
-			a = warrior_agent.BlueWarrior(self.next_agent_id, self)
+			a = warrior_agent.BlueCommonWarrior(self.next_agent_id, self)
 		pos = np.array((x,y))
 		self.schedule.add(a)
 		self.space.place_agent(a, pos)
