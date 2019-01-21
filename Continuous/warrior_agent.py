@@ -8,7 +8,10 @@ class WarriorAgent(mesa.Agent):
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
+        self.morale = 100
         self.velocity = np.zeros(2)
+        # recently = in the last turn
+        self.damage_received_recently = 0.0
         self.ENEMY_SCANNING_RADIUS = model.VISION_RANGE # promień widzenia przeciwników
         self.FLOCKING_RADIUS = model.FLOCKING_RADIUS # promień widzenia swoich
         self.SEPARATION_DISTANCE = model.SEPARATION_DISTANCE # jaki dystans chce zachować od innych w oddziale
@@ -30,9 +33,14 @@ class WarriorAgent(mesa.Agent):
         self.model.schedule.remove(self)
 
     def attack(self, enemy):
-        enemy.hp -= self.attack_damage
-        if enemy.hp <= 0:
-            enemy.die()
+        enemy.receive_damage(self.attack_damage)
+
+    def receive_damage(self, damage):
+        self.hp -= damage
+        self.damage_received_recently += damage
+
+        if self.hp <= 0:
+            self.die()
 
     # ostateczny wektor prędkości otrzymujemy normalizując wektor prędkości z metody calculate_velocity_vector()
     # i mnożąc go przez szybkość
@@ -98,6 +106,12 @@ class WarriorAgent(mesa.Agent):
                 vector -= self.model.space.get_heading(self.pos, ally.pos)
         return vector
 
+    def get_morale_of_allies_in_flocking_radius(self):
+        return [ally.get_morale() for ally in self.scan_for_allies()]
+
+    def get_morale(self):
+        return self.morale
+
 class RedWarrior(WarriorAgent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -123,5 +137,6 @@ class BlueCommonWarrior(BlueWarrior):
 class BlueEliteWarrior(BlueWarrior):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
+        self.morale = 140
         self.hp = 15.0
         self.attack_damage = 2.5
