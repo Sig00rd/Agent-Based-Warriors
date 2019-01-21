@@ -1,4 +1,5 @@
 import mesa.agent
+import functools
 import numpy as np
 import random
 
@@ -8,7 +9,7 @@ class WarriorAgent(mesa.Agent):
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-        self.morale = 100
+        self.morale = 100.0
         self.has_killed_recently = False
         self.damage_inflicted_recently = 0.0
         self.velocity = np.zeros(2)
@@ -37,7 +38,7 @@ class WarriorAgent(mesa.Agent):
     def attack(self, enemy):
         if enemy.receive_damage(self.attack_damage):
             self.has_killed_recently = True
-        self.has_inflicted_damage = True
+        self.damage_inflicted_recently = self.attack_damage
 
     # returns if the damage inflicted was a killing blow
     def receive_damage(self, damage):
@@ -126,14 +127,36 @@ class WarriorAgent(mesa.Agent):
     def damage_inflicted_morale_modifier(self):
         return simulation_parameters.damage_inflicted_morale_modifier(self.damage_inflicted_recently)
 
-    def update_morale(self, morale_modifier):
-        self.morale += morale_modifier
-        self.damage_inflicted_recently = 0.0
+    def update_morale(self, new_morale):
+        self.clear_recent_event_trackers()
+        self.morale = new_morale
+        if self.morale <= 20:
+            self.flee()
+        self.adjust_attack_damage()
+
+    def flee(self):
+        print("Uciekam!")
+        self.die()
+
+    def adjust_attack_damage(self):
+        self.attack_damage = self.initial_attack_damage * self.morale/100
+
+    def clear_recent_event_trackers(self):
         self.damage_received_recently = 0.0
+        self.damage_inflicted_recently = 0.0
         self.has_killed_recently = False
 
-    def get_morale_of_allies_in_flocking_radius(self):
-        return [ally.get_morale() for ally in self.scan_for_allies()]
+    def get_average_morale_of_allies_in_flocking_radius(self):
+        morale = [ally.get_morale() for ally in self.scan_for_allies()]
+        if not morale:
+            return 0
+        return sum(morale)/len(morale)
+
+    def calculate_new_morale(self, average_morale_of_allies) -> float:
+        new_morale = (average_morale_of_allies * simulation_parameters.ALLIES_MORALE_WEIGHT) + \
+                     (self.calculate_own_morale_modifier() + self.morale) * \
+                     (1 - simulation_parameters.ALLIES_MORALE_WEIGHT)
+        return new_morale
 
     def get_morale(self):
         return self.morale
