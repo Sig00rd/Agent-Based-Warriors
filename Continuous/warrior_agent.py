@@ -12,13 +12,13 @@ class WarriorAgent(mesa.Agent):
         self.velocity = np.zeros(2)
         # recently = in the last turn
         self.damage_received_recently = 0.0
-        self.ENEMY_SCANNING_RADIUS = model.VISION_RANGE # promień widzenia przeciwników
-        self.FLOCKING_RADIUS = model.FLOCKING_RADIUS # promień widzenia swoich
-        self.SEPARATION_DISTANCE = model.SEPARATION_DISTANCE # jaki dystans chce zachować od innych w oddziale
-        self.COHERENCE_FACTOR = model.COHERENCE_FACTOR
-        self.MATCH_FACTOR = model.MATCH_FACTOR
-        self.SEPARATION_FACTOR = model.SEPARATION_FACTOR
-        self.ENEMY_POSITION_FACTOR = model.ENEMY_POSITION_FACTOR
+        self.ENEMY_SCANNING_RADIUS = simulation_parameters.VISION_RANGE # promień widzenia przeciwników
+        self.FLOCKING_RADIUS = simulation_parameters.FLOCKING_RADIUS # promień widzenia swoich
+        self.SEPARATION_DISTANCE = simulation_parameters.SEPARATION_DISTANCE # jaki dystans chce zachować od innych w oddziale
+        self.COHERENCE_FACTOR = simulation_parameters.COHERENCE_FACTOR
+        self.MATCH_FACTOR = simulation_parameters.MATCH_FACTOR
+        self.SEPARATION_FACTOR = simulation_parameters.SEPARATION_FACTOR
+        self.ENEMY_POSITION_FACTOR = simulation_parameters.ENEMY_POSITION_FACTOR
 
     def step(self):
         enemies_in_attack_range = self.scan_for_enemies(self.attack_range)
