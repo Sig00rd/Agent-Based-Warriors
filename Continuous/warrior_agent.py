@@ -130,12 +130,11 @@ class WarriorAgent(mesa.Agent):
     def update_morale(self, new_morale):
         self.clear_recent_event_trackers()
         self.morale = new_morale
-        if self.morale <= 20:
+        if self.morale <= simulation_parameters.TO_FLEE_THRESHOLD:
             self.flee()
         self.adjust_attack_damage()
 
     def flee(self):
-        print("Uciekam!")
         self.die()
 
     def adjust_attack_damage(self):
@@ -165,8 +164,8 @@ class RedWarrior(WarriorAgent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.type = 'red'
-        self.initial_hp = 10.0
-        self.hp = 10.0
+        self.hp = 50.0
+        self.initial_hp = self.hp
         self.attack_damage = 2.0
         self.initial_attack_damage = 2.0
         self.attack_range = 2.0
@@ -184,8 +183,8 @@ class BlueWarrior(WarriorAgent):
 class BlueCommonWarrior(BlueWarrior):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-        self.hp = 10.0
-        self.initial_hp = 10.0
+        self.hp = 50.0
+        self.initial_hp = self.hp
         self.attack_damage = 2.0
         self.initial_attack_damage = 2.0
 
@@ -193,8 +192,8 @@ class BlueEliteWarrior(BlueWarrior):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.morale = 140
-        self.hp = 15.0
-        self.initial_hp = 15.0
+        self.hp = 75.0
+        self.initial_hp = self.hp
         self.attack_damage = 2.5
         self.initial_attack_damage = 2.5
         self.elite = True
